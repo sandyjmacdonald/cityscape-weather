@@ -52,10 +52,10 @@ bme280 = BME280(i2c_dev=bus)
 ltr559 = LTR559()
 
 sensitivity = 75
-lux_vals = [sensitivity] * 5
+lux_vals = [100] * 5
 
 while True:
-    lux = lux = ltr559.get_lux()
+    lux = ltr559.get_lux()
     lux_vals = lux_vals[1:] + [lux]
     avg_lux = sum(lux_vals) / len(lux_vals)
     alpha = min((avg_lux / sensitivity), 1.0)
@@ -71,10 +71,17 @@ while True:
 
     draw = ImageDraw.Draw(image)
 
-    font = ImageFont.truetype("fonts/Nunito-Bold.ttf", 32)
+    font = ImageFont.truetype("fonts/Nunito-Bold.ttf", 28)
     temperature = bme280.get_temperature()
+
     message = f"Temp: {temperature:.2f}°C"
-    draw.text((5, 196), message, font=font, fill=colour)
+
+    lower_strip_top = 198
+    lower_strip_bottom = HEIGHT
+
+    text_width, text_height = font.getsize(message)
+    text_x = (WIDTH - text_width) / 2
+    text_y = lower_strip_top + (((lower_strip_bottom - lower_strip_top) - text_height) / 2) - 2
+    draw.text((text_x, text_y), message, font=font, fill=colour)
 
     disp.display(image)
-#    time.sleep(0.25)
